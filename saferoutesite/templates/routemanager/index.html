@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+{% load leaflet_tags %}
+<html>
+    <head>
+        <title>Safe Route</title>
+        {% leaflet_js %}
+        {% leaflet_css %}
+        <style>
+            .leaflet-container { height: 100%; width: 100%; }
+        </style>
+        <script type= 'text/javascript'>
+            var route_list = {{ route }}
+            function map_init_basic(map, options) {
+                L.marker(route_list[0]).addTo(map)
+                L.marker(route_list[0]).bindPopup("Start: {{ start_address }}").addTo(map)
+                L.polyline(route_list).addTo(map)
+                var end_address = route_list.pop()
+                L.marker(end_address).addTo(map)
+                L.marker(end_address).bindPopup("End: {{ end_address }}").addTo(map)
+                map.fitBounds([route_list[0], end_address])
+            }
+        </script>
+
+    </head>
+
+    <body>
+        <h1> Welcome to our CMSC 122 Project: Safe-Route. </h1>
+        <p>
+            This project is designed to find the "safest" walking route for a given start and end destination. 
+            Our algorithm takes in to account weather conditions and time of travel and computes the likelihood 
+            of a crime occuring on a given path given crime history in the area. </br>
+             
+            </br>
+            Our program only requires entry of a start and end address (if travelling now), or, if you would like to 
+            see a route for a different day, you may enter in that date, time, or weather conditions. </br> 
+            
+            </br>
+            Please enter in your desired start and finish address within the City of Chicago to see the safest route you can take between them. 
+        </p>
+        <font color='red'>
+            <strong> {{ error }} </strong>
+        </font>
+        </p> 
+        <div class= "frame">
+        <form method="get">
+            <table class="address">
+                {{ address_form }}
+            </table>
+                <input type="submit" value="Submit" />
+        </form>
+        </div>
+        <div id="map" style= "width:1000px; height:1000px">
+        {% leaflet_map "map" callback="window.map_init_basic" %}
+        </div>
+    </body>
+</html>
