@@ -151,5 +151,9 @@ def Regression_List(list_of_blocks, temp, precip, t_sens, p_sens,
             block_name = crime.groupby('Block').count().sort_values(
                     'Longitude', ascending = False).index[0]
             crime = crime[crime.Block == block_name]
-        ret_dic[blocks_dic[block]] = Regression(weather, crime, date)
+        try:
+            ret_dic[blocks_dic[block]] = Regression(weather, crime, date)
+        #Occurs when event has never occured - ex. temperature = 200
+        except ValueError:
+            ret_dic[blocks_dic[block]] = 1
     return ret_dic
