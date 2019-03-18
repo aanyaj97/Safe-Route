@@ -2,6 +2,10 @@ import osmnx as ox
 import networkx as nx
 import geopy.geocoders
 import datetime
+import numpy as np
+import math
+from math import radians, cos, sin, asin, sqrt
+from scipy import stats
 
 from geopy.geocoders import Nominatim
 from SQLRequest3 import Regression_List 
@@ -185,8 +189,48 @@ def get_path(start_coord, end_coord, G, nodes, scores):
             end_node = node
     
     path = nx.dijkstra_path(G, start_node, end_node, weight='length')
-    
-    return path
+    #length of the shortest path
+    s_length = nx.shortest_path_length(
+        G, source=start_node, target=end_node, weight='length')    
+    return path, s_length
+
+
+#From PA3 (modified)
+def haversine(t1, t2):
+    '''
+    Calculate the circle distance between two points
+    on the earth (specified in decimal degrees)
+    '''
+    lat1, lon1 = t1
+    lat2, lon2 = t2
+    # convert decimal degrees to radians
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+
+    # haversine formula
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+    c = 2 * asin(sqrt(a))
+
+    # 6367 km is the radius of the Earth
+    km = 6367 * c
+    m = km * 1000
+    return m
+
+
+#From Stack Overflow Question 8747761
+def lognorm(x):
+    ''' 
+    gives result of cdf of lognorm given mu/sigma
+    '''
+    #mu, sigma from Distribution_Creation
+    if x <= 0:
+        return 0
+    mu = np.log(893840.8440044996)
+    sigma = 10.433836709999136
+    a = (math.log(x) - mu)/math.sqrt(2 * sigma ** 2)
+    p = 0.5 + 0.5 * math.erf(a)
+    return p
 
 
 def go(args):
@@ -242,16 +286,19 @@ def go(args):
     edges_lst = [edge_to_latlon_pair(G, edge) for edge in edges]
 
     # adjust temperature and time sensitivities
-    t_sens = 8
+    t_sens = 12
     time_low = hour - 2
     time_up = hour + 2
-    scores = Regression_List(edges_lst, temp, precip, t_sens, precip, date,\
+    p_sens = 0.5
+    scores = Regression_List(edges_lst, temp, precip, t_sens, p_sens, date,\
                              time_low, time_up)
     
-    path = get_path(start_coord, end_coord, G, nodes, scores)
+    path, s_length = get_path(start_coord, end_coord, G, nodes, scores)
     
     route_steps = [[G.nodes[node]['y'],G.nodes[node]['x']] for node in path]
     path_coords = [[start_coord[0],start_coord[1]]] + route_steps +\
                   [[end_coord[0],end_coord[1]]]
-
-    return path_coords
+    if type(s_length) == dict:
+        s_length = s_length[end_node]
+        
+    return path_coords, 1 - lognorm(s_length / haversine(start_coord, end_coord))
