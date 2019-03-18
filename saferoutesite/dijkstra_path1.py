@@ -223,7 +223,7 @@ def lognorm(x):
     ''' 
     gives result of cdf of lognorm given mu/sigma
     '''
-    #mu, sigma from Distribution_Creation
+    #mu, sigma from CreatingDistribution
     if x <= 0:
         return 0
     mu = np.log(893840.8440044996)
