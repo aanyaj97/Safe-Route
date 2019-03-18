@@ -1,3 +1,5 @@
+## Safe-Route
+
 Welcome to our CMSC 122 Project: Safe-Route. 
 
 We created an algorthim to compute the 'safest' route to walk from one destination to another using historical crime data to evaluate the likelihood of a crime occuring at your time of travel.
