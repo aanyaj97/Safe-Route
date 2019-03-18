@@ -64,12 +64,17 @@ def plot_route(request):
                                                          None)
             args["precipitation"] = form.cleaned_data.get('precipitation',\
                                                            None)
-            route = go(args)
+            route, relative_score = go(args)
             if type(route) == str:
                 route_info['error'] = route
-            route_info['route'] = route
-            route_info['start_address'] = form.cleaned_data['start_address']
-            route_info['end_address'] = form.cleaned_data['end_address']
+                route_info['relative_score'] = "No score can be computed."
+            else:
+                route_info['route'] = route
+                route_info['start_address'] = form.cleaned_data['start_address']
+                route_info['end_address'] = form.cleaned_data['end_address']
+                route_info['relative_score'] = "Your path is safer than " +\
+                                                str(round(relative_score)) +\
+                                                "% of all paths in Chicago."
     route_info['address_form'] = form
 
     return render(request, 'routemanager/index.html', route_info)

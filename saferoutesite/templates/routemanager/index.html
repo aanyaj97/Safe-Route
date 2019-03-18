@@ -33,14 +33,19 @@
              
             </br>
             Our program only requires entry of a start and end address (if travelling now), or, if you would like to 
-            see a route for a different day, you may enter in that date, time, or weather conditions. </br> 
+            see a route for a different day, you may enter in that date, time, or weather conditions. You will also be able to see a relative "safety score" for your route. </br> 
             
             </br>
-            Please enter in your desired start and finish address within the City of Chicago to see the safest route you can take between them. Please enter the data in the format specified below the entry boxes. If you get a geocoder timeout (a result of a package we use), please wait 5 seconds to refresh your page or check your internet connection. 
+            Please enter in your desired start and finish address within the City of Chicago to see the safest route you can take between them. Please enter the data in the format specified below the entry boxes. If you get a geocoder timeout (a result of a package we use), please wait 5 seconds to refresh your page or check your internet connection. </br>
+            
+            </br>
+            Please note that your path is chosen to be both safe as well as direct and only on main streets. Low safety percentages may come from the need to travel on non-main road paths as there is no provided crime data for those. Please cross reference the score with the route shown below!
         </p>
         <font color='red'>
-            <strong> {{ error }} </strong>
+            <strong> {{ error }} {{ relative_score }} </strong>
         </font>
+        <p>
+            
         </p> 
         <div class= "frame">
         <form method="get">

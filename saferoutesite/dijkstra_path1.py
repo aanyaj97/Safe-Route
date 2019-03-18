@@ -301,4 +301,4 @@ def go(args):
     if type(s_length) == dict:
         s_length = s_length[end_node]
         
-    return path_coords, 1 - lognorm(s_length / haversine(start_coord, end_coord))
+    return path_coords,(1-lognorm(s_length/haversine(start_coord,end_coord)))*100
